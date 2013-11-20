@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Universal Analytics Client ID Tests</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+  <link href="css/sticky-footer.css" rel="stylesheet">
+  <script>dataLayer=[];</script>
+</head>
+
+<body>
+  <!-- Google Tag Manager -->
+  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-FLLMN"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-FLLMN');</script>
+  <!-- End Google Tag Manager -->
+
+  <div id="wrap">
+    <!-- Begin page content -->
+    <div class="container">
+
+      <div class="page-header">
+        <h1>UA Client ID 写入和提取测试</h1>
+      </div>
+
+      <p class="lead">主要的测试目的: 测试 Client ID 的提取和更改, 以及变更之后, Cookie 和 GA Collect 请求有些怎样的变化.</p>
+      <p>1. 趁机试用熟悉 Bootstrap</p>
+      <p>2. 再次测试 adblock 监测</p>
+      <p>3. UUID 可以用 Sublime Text 的插件 GenerateUUID 产生</p>
+      <p>4. Client ID 提取和变更方法, 可以查看网页源码, 以及翻阅 Google 文档</p>
+      <p>5. 需要 Firebug, HTTPFox 等工具用于调试</p>
+
+      <div class="info">
+        <p class="lead">信息面板</p>
+        <button type="button" class="btn btn-default showinfo-btn" onclick="showinfo();">显示当前 UA Cookie 信息</button>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cookie Name</th>
+              <th>Cookie Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Tracker Name</td>
+              <td id="trackerName"></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Cookie Name</td>
+              <td id="cookieName"></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Cookie Domain</td>
+              <td id="cookieDomain"></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Client ID</td>
+              <td id="clientId"></td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>注意:</h4>
+        <p>按照 Google 的说法, Client ID 字段目前只接受两种格式: 一是 <a href="http://www.ietf.org/rfc/rfc4122.txt" target="_blank">UUID (version 4)</a>, 二是 "X.Y" 形式的 32 位随机数. 其实目前放啥都行 (汉字也可以), 但将来 Google 肯定会做严格限定的.</p>
+        <p>UUID举例: 53228522-d6fb-4798-9821-2b2d4d3fd302</p>
+      </div>
+
+      <div class="customCid">
+        <form class="form-inline" role="form">
+          <p class="lead">自定义 Client ID</p>
+          <p>随意输入一些自定义的 Client ID 试一试, 下面会刷新结果.</p>
+          <p>生成一些UUID, 放进去试一试.</p>
+          <p>注意一下三者的区别: </p>
+          <ul>
+            <li><b>Your Input</b>: 你输入的字串</li>
+            <li><b>GA Client ID</b>: ga.getAll()[0].get('clientId')打印出来的 cid</li>
+            <li><b>Current Cookie</b>: document.cookie 打印出来的 cookie</li>
+          </ul>
+          <div class="form-group">
+            <input type="text" class="form-control custominfo" id="inputCid" placeholder="Enter Your Custom Client ID">
+          </div>
+          <button type="button" class="btn btn-default custominfo" onclick="customcid();">将自定义cid写入cookie</button>
+          <button type="button" class="btn btn-default custominfo" onclick="ga('send', 'event', 'new event', 'click');">触发新的 GA Event 看看效果</button>
+        </form>
+          <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cookie Name</th>
+              <th>Cookie Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Your Input</td>
+              <td id="input"></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>GA Client ID</td>
+              <td id="gaClientId"></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Current Cookie</td>
+              <td id="currentCookie"></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>疑问: ga.getAll()[0].get() 似乎是基于 session的, 尽管 GA Collect 请求已经用上了新的 cid, 但是它还是返回上一次的 cid</p>
+      </div>
+
+      <div class="deleteCid">
+        <p class="lead">删除_ga cookie, 删除cid</p>
+        <p>请通过浏览器自带清理功能, 清除 cookie 信息, 做新一轮测试.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script type="text/javascript">var _adblock = true</script>
+  <script src="js/advertise.js"></script>
+  <script>
+    // 打印提取的ga信息
+    function showinfo () {
+      // 提取ga信息
+      var trackerName  = ga.getAll()[0].get('name');
+      var cookieName   = ga.getAll()[0].get('cookieName');
+      var cookieDomain = ga.getAll()[0].get('cookieDomain');
+      var clientId     = ga.getAll()[0].get('clientId');
+      if (!_adblock) {
+        // 是否有adblock屏蔽
+        document.getElementById('trackerName').innerHTML  = trackerName;
+        document.getElementById('cookieName').innerHTML   = cookieName;
+        document.getElementById('cookieDomain').innerHTML = cookieDomain;
+        document.getElementById('clientId').innerHTML     = clientId;
+      } else {
+        alert('GA 监测代码没加载, 开 Adblock 了?');
+      }
+    }
+
+    // 自定义cid
+    function customcid () {
+      var input = document.getElementById('inputCid').value;
+      ga('create', 'UA-12150210-15', 'auto', {'clientId': input});
+      ga('send', 'event', 'create a new client id', 'click', input);
+
+      var clientId2 = ga.getAll()[0].get('clientId');
+      document.getElementById('input').innerHTML = input;
+      document.getElementById('gaClientId').innerHTML = clientId2;
+      document.getElementById('currentCookie').innerHTML = document.cookie;
+    }
+
+    // function deleteCookie (name) {
+
+    //   date = new Date();
+    //   date.setDate(date.getDate() - 1);
+    //   document.cookie = '_ga=;expires=' + date;
+
+    //   document.cookie = '_ga=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+    //   document.cookie = name + '=;expires=Fri Nov 20 12:17:48 2015;';
+    // }
+  </script>
+
+</body>
+
+</html>
