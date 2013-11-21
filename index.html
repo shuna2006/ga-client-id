@@ -6,8 +6,7 @@
   <title>Universal Analytics Client ID Tests</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
   <link href="css/sticky-footer.css" rel="stylesheet">
   <script>dataLayer=[];</script>
 </head>
@@ -37,6 +36,7 @@
       <p>3. UUID 可以用 Sublime Text 的插件 GenerateUUID 产生</p>
       <p>4. Client ID 提取和变更方法, 可以查看网页源码, 以及翻阅 Google 文档</p>
       <p>5. 需要 Firebug, HTTPFox 等工具用于调试</p>
+      <p>6. adblock 监测逻辑, 来自于lunametrics</p>
 
       <div class="info">
         <p class="lead">信息面板</p>
@@ -120,7 +120,7 @@
             </tr>
           </tbody>
         </table>
-        <p>疑问: ga.getAll()[0].get() 似乎是基于 session的, 尽管 GA Collect 请求已经用上了新的 cid, 但是它还是返回上一次的 cid</p>
+        <p>疑问: <i>ga.getAll()[0].get()</i> 似乎是基于 session的, 尽管 GA Collect 请求已经用上了新的 cid, 但是它还是返回上一次的 cid</p>
       </div>
 
       <div class="deleteCid">
@@ -132,7 +132,7 @@
   </div>
 
   <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   <script type="text/javascript">var _adblock = true</script>
   <script src="js/advertise.js"></script>
   <script>
